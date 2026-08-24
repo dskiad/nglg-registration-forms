@@ -1,173 +1,29 @@
 /**
- * Sanitized reference backend for the English foreign-delegation form.
+ * OPTIONAL CONFIGURATION REFERENCE — DO NOT DEPLOY THIS FILE BY ITSELF.
  *
- * Required Script Properties:
- *   SPREADSHEET_ID
- *   RESPONSES_SHEET
- *   INVITATION_SHEET
+ * The production implementation is Code.gs.
  *
- * Optional:
- *   ORGANIZER_EMAIL
+ * If a future fork should keep its Spreadsheet ID outside source control,
+ * replace the SPREADSHEET_ID_ constant in Code.gs with:
+ *
+ *   function getSpreadsheetId_() {
+ *     const id = PropertiesService.getScriptProperties()
+ *       .getProperty('SPREADSHEET_ID');
+ *
+ *     if (!id) {
+ *       throw new Error('Missing SPREADSHEET_ID in Script Properties.');
+ *     }
+ *
+ *     return id;
+ *   }
+ *
+ * Then replace:
+ *
+ *   SpreadsheetApp.openById(SPREADSHEET_ID_)
+ *
+ * with:
+ *
+ *   SpreadsheetApp.openById(getSpreadsheetId_())
+ *
+ * The current production destination is documented in README.md and Code.gs.
  */
-
-function doGet() {
-  return HtmlService.createHtmlOutputFromFile('Index')
-    .setTitle('NGLG Assembly Registration')
-    .addMetaTag('viewport', 'width=device-width, initial-scale=1, maximum-scale=1');
-}
-
-function getConfig_() {
-  const properties = PropertiesService.getScriptProperties();
-  const config = {
-    spreadsheetId: properties.getProperty('SPREADSHEET_ID'),
-    responsesSheet: properties.getProperty('RESPONSES_SHEET') || 'form1',
-    invitationSheet: properties.getProperty('INVITATION_SHEET') || 'invitation',
-    organizerEmail: properties.getProperty('ORGANIZER_EMAIL') || ''
-  };
-
-  if (!config.spreadsheetId) {
-    throw new Error('Missing SPREADSHEET_ID in Script Properties.');
-  }
-
-  return config;
-}
-
-function getGrandLodges() {
-  const config = getConfig_();
-  const sheet = SpreadsheetApp.openById(config.spreadsheetId)
-    .getSheetByName(config.invitationSheet);
-
-  if (!sheet) throw new Error('Grand Lodge list sheet not found.');
-
-  return sheet.getRange(1, 1, sheet.getLastRow(), 1)
-    .getDisplayValues()
-    .flat()
-    .map(value => value.trim())
-    .filter(value => value && value.toLowerCase() !== 'grand lodge name');
-}
-
-function submitData(formData) {
-  const data = normalizeAndValidate_(formData);
-  const config = getConfig_();
-  const spreadsheet = SpreadsheetApp.openById(config.spreadsheetId);
-  const sheet = spreadsheet.getSheetByName(config.responsesSheet);
-
-  if (!sheet) throw new Error('Response sheet not found.');
-
-  const lock = LockService.getScriptLock();
-  lock.waitLock(20000);
-
-  try {
-    sheet.appendRow([
-      new Date(),
-      data.grandLodge,
-      data.delegationRole,
-      data.firstName,
-      data.lastName,
-      data.email,
-      data.title,
-      data.rank,
-      data.hasCompanion,
-      data.companionName,
-      data.flightsBooked,
-      data.arrivalDate,
-      data.departureDate,
-      data.arrivalFlight,
-      data.arrivalTime,
-      data.departureFlight,
-      data.departureTime
-    ]);
-  } finally {
-    lock.releaseLock();
-  }
-
-  sendConfirmation_(data, config.organizerEmail);
-  return { ok: true, message: 'Registration received successfully.' };
-}
-
-function normalizeAndValidate_(formData) {
-  const clean = value => String(value == null ? '' : value).trim();
-  const data = {
-    grandLodge: clean(formData.grandLodge),
-    delegationRole: clean(formData.delegationRole),
-    firstName: clean(formData.firstName),
-    lastName: clean(formData.lastName),
-    email: clean(formData.email).toLowerCase(),
-    title: clean(formData.title),
-    rank: clean(formData.rank === 'Other' ? formData.otherRank : formData.rank),
-    hasCompanion: clean(formData.hasCompanion),
-    companionName: clean(formData.companionName),
-    flightsBooked: clean(formData.flightsBooked),
-    arrivalDate: clean(formData.arrivalDate),
-    departureDate: clean(formData.departureDate),
-    arrivalFlight: clean(formData.arrivalFlight),
-    arrivalTime: clean(formData.arrivalTime),
-    departureFlight: clean(formData.departureFlight),
-    departureTime: clean(formData.departureTime)
-  };
-
-  const required = [
-    'grandLodge', 'delegationRole', 'firstName', 'lastName',
-    'email', 'title', 'rank', 'hasCompanion', 'flightsBooked'
-  ];
-
-  required.forEach(key => {
-    if (!data[key]) throw new Error('Please complete every required field.');
-  });
-
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-    throw new Error('Please enter a valid email address.');
-  }
-
-  if (data.hasCompanion === 'Yes' && !data.companionName) {
-    throw new Error('Please enter the accompanying spouse name.');
-  }
-
-  return data;
-}
-
-function sendConfirmation_(data, organizerEmail) {
-  const subject = 'NGLG Registration Confirmation — Corfu 18–19 December 2026';
-  const html = '<div style="font-family:Arial,sans-serif;max-width:640px;margin:auto;color:#17233b">' +
-    '<h2 style="color:#002147">Registration Confirmation</h2>' +
-    '<p>Dear ' + escapeHtml_(data.title) + ' ' + escapeHtml_(data.lastName) + ',</p>' +
-    '<p>Your registration for the NGLG Semi-Annual Grand Communication in Corfu has been received.</p>' +
-    '<table style="border-collapse:collapse;width:100%">' +
-      row_('Grand Lodge', data.grandLodge) +
-      row_('Delegation role', data.delegationRole) +
-      row_('Name', data.firstName + ' ' + data.lastName) +
-      row_('Email', data.email) +
-      row_('Rank / Office', data.rank) +
-      row_('Accompanying spouse', data.hasCompanion === 'Yes' ? data.companionName : 'No') +
-      row_('Flights booked', data.flightsBooked) +
-      row_('Arrival', [data.arrivalDate, data.arrivalFlight, data.arrivalTime].filter(Boolean).join(' — ')) +
-      row_('Departure', [data.departureDate, data.departureFlight, data.departureTime].filter(Boolean).join(' — ')) +
-    '</table>' +
-    '<p style="margin-top:24px">National Grand Lodge of Greece</p>' +
-    '</div>';
-
-  MailApp.sendEmail({
-    to: data.email,
-    cc: organizerEmail || undefined,
-    subject: subject,
-    htmlBody: html,
-    name: 'National Grand Lodge of Greece'
-  });
-}
-
-function row_(label, value) {
-  return '<tr><th style="text-align:left;padding:8px;border-bottom:1px solid #ddd">' +
-    escapeHtml_(label) +
-    '</th><td style="padding:8px;border-bottom:1px solid #ddd">' +
-    escapeHtml_(value || '—') +
-    '</td></tr>';
-}
-
-function escapeHtml_(value) {
-  return String(value == null ? '' : value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
