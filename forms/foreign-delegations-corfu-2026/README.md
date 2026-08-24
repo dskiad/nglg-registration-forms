@@ -11,36 +11,46 @@
 - Corfu, Greece
 - 18–19 December 2026
 
+## Response destination
+
+The production backend in `Code.gs` writes to:
+
+- Spreadsheet: **Form 18 19 Dec 2026**
+- Spreadsheet ID: `1HrlJceDivajt2ENWmlaZSR7U5ScMkxL7OoNu-KMh9_c`
+- Sheet tab: `form1`
+- Build: `NGLG-EN-CORFU-2026-R1`
+
+The first 25 columns are validated before every write. Column Z is used for **Email (Head of Delegation)** and is created automatically if the header is blank. If any earlier header differs, the submission stops before writing, preventing column misalignment.
+
 ## Information collected
 
-The form requests:
-
-- Grand Lodge
-- Delegation role
-- First name and last name
-- Email
-- Title / salutation
-- Rank / office
-- Accompanying spouse details
-- Whether flights have been booked
+- Grand Lodge and founding year
+- Head of Delegation: name, salutation, rank/office and email
+- Accompanying person/spouse
 - Arrival and departure dates
-- Arrival and departure flight numbers and times
+- Flight booking status, airline, flight numbers and times
+- Allergies and dietary restrictions
+- Optional Participant 2 details
+- Optional Participant 3 details
 
-## Files
+## Deployment
 
-- `Index.html` is a responsive English interface suitable for Google Apps Script HTML Service.
-- `Code.gs.example` is a sanitized reference backend. Copy it to `Code.gs` inside Apps Script and configure Script Properties.
-- `links.json` records the current public URL and verification date.
+1. Open the Google Apps Script project.
+2. Replace its `Code.gs` with this repository's `Code.gs`.
+3. Replace its `Index.html` with this repository's `Index.html`.
+4. In Apps Script, run `testConnection()` once and grant the requested permissions.
+5. Confirm the result reports:
+   - `spreadsheet: Form 18 19 Dec 2026`
+   - `sheet: form1`
+   - `build: NGLG-EN-CORFU-2026-R1`
+6. Select **Deploy → Manage deployments → Edit → New version → Deploy**.
+7. Open the `/exec` URL in a private/incognito browser and submit one clearly labelled test registration.
+8. Confirm that one new row appears in `form1` and that the confirmation email arrives.
 
-## Apps Script configuration
+## Optional email copy
 
-Set these values in **Project Settings → Script Properties**:
+Set `ORGANIZER_EMAIL` in **Project Settings → Script Properties** if the organiser should receive a copy of each confirmation.
 
-- `SPREADSHEET_ID`: the private response spreadsheet ID
-- `RESPONSES_SHEET`: response-tab name, for example `form1`
-- `INVITATION_SHEET`: Grand Lodge list-tab name, for example `invitation`
-- `ORGANIZER_EMAIL`: optional address that receives a copy
+## Privacy
 
-Deploy as a Web App and verify access in a private/incognito browser window.
-
-> The live production deployment may contain additional private configuration. Never add response data or private spreadsheet identifiers to this public repository.
+Never commit response exports or personal data. The spreadsheet is intentionally not included in this repository.
