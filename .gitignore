@@ -1,0 +1,21 @@
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+*.secret
+credentials.json
+service-account*.json
+
+# Registration exports and personal data
+registrations/
+responses/
+exports/
+*.csv
+*.xlsx
+*.xls
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
