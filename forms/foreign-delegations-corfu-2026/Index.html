@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <style>
-    :root { --navy:#061a33; --royal:#0b3567; --gold:#c99a35; --paper:#f5f1e8; --ink:#17233b; }
+    :root { --navy:#061a33; --royal:#0b3567; --gold:#c99a35; --paper:#f5f1e8; --ink:#17233b; --error:#9e2020; }
     * { box-sizing:border-box; }
     body {
       margin:0; padding:24px 12px; min-height:100vh; color:var(--ink);
@@ -18,7 +18,7 @@
         url('https://drive.google.com/thumbnail?id=19y4N-87Fd0zfnTxpxLOYiyuBbhmQl62_&sz=w2000') center/cover fixed;
     }
     .card {
-      width:min(720px,100%); margin:auto; overflow:hidden; border:1px solid var(--gold);
+      width:min(760px,100%); margin:auto; overflow:hidden; border:1px solid var(--gold);
       border-radius:24px; background:rgba(245,241,232,.97);
       box-shadow:0 24px 70px rgba(0,0,0,.45);
     }
@@ -35,12 +35,19 @@
     .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
     .full { grid-column:1/-1; }
     label { display:block; margin:0 0 7px; font-size:13px; font-weight:700; color:var(--navy); }
-    input, select {
+    input, select, textarea {
       width:100%; min-height:50px; padding:11px 14px; border:1.5px solid var(--gold);
       border-radius:12px; background:#fffdf8; color:#152236; font:inherit; outline:none;
     }
-    input:focus, select:focus { border-color:#1c5ba2; box-shadow:0 0 0 3px rgba(28,91,162,.18); }
-    .hidden { display:none !important; }
+    textarea { min-height:90px; resize:vertical; }
+    input:focus, select:focus, textarea:focus { border-color:#1c5ba2; box-shadow:0 0 0 3px rgba(28,91,162,.18); }
+    details {
+      grid-column:1/-1; border:1px solid #d6bd79; border-radius:14px;
+      background:rgba(255,255,255,.56); overflow:hidden;
+    }
+    summary { padding:15px 17px; cursor:pointer; font-weight:700; color:var(--navy); }
+    .participant-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; padding:0 16px 17px; }
+    .participant-grid .full { grid-column:1/-1; }
     .notice { padding:13px 15px; border-left:4px solid var(--gold); background:#fff8df; font-size:13px; line-height:1.5; }
     button {
       width:100%; min-height:54px; border:1px solid #e2bd62; border-radius:13px;
@@ -49,17 +56,20 @@
     }
     button:disabled { opacity:.6; cursor:wait; }
     #status { margin-top:14px; text-align:center; min-height:22px; font-weight:600; }
+    #status.error { color:var(--error); }
     #success { padding:42px 26px; text-align:center; }
     #success h2 { color:var(--navy); font-family:"Playfair Display",serif; }
     footer { padding:0 26px 24px; text-align:center; font-size:12px; color:#586274; }
     footer a { color:#8e6511; }
+    .build { display:block; margin-top:8px; opacity:.72; }
     @media (max-width:620px) {
       body { padding:0; background-attachment:scroll; }
       .card { border-radius:0; min-height:100vh; }
       form { padding:22px 16px; }
-      .grid { grid-template-columns:1fr; }
-      .full { grid-column:auto; }
-      input, select { font-size:16px; background:#172231; color:#fff; }
+      .grid, .participant-grid { grid-template-columns:1fr; }
+      .full, .participant-grid .full { grid-column:auto; }
+      input, select, textarea { font-size:16px; background:#172231; color:#fff; }
+      input::placeholder, textarea::placeholder { color:#c5cbd3; }
       select option { background:#111c2c; color:#fff; }
     }
   </style>
@@ -77,63 +87,114 @@
       <div class="grid">
         <div class="full">
           <label for="grandLodge">Grand Lodge *</label>
-          <select id="grandLodge" name="grandLodge" required><option value="">Loading…</option></select>
+          <input id="grandLodge" name="grandLodge" autocomplete="organization" required>
         </div>
         <div>
-          <label for="delegationRole">Delegation role *</label>
-          <select id="delegationRole" name="delegationRole" required>
-            <option value="">Select</option><option>Head of Delegation</option><option>Member</option>
-          </select>
+          <label for="foundingYear">Founding year</label>
+          <input id="foundingYear" name="foundingYear" type="number" min="1200" max="2026" inputmode="numeric">
         </div>
         <div>
-          <label for="title">Title / salutation *</label>
+          <label for="title">Salutation / title *</label>
           <select id="title" name="title" required>
-            <option value="">Select</option><option>MW Bro.</option><option>RW Bro.</option>
-            <option>VW Bro.</option><option>W Bro.</option><option>Bro.</option>
+            <option value="">Select</option>
+            <option>MW Bro.</option><option>RW Bro.</option><option>VW Bro.</option>
+            <option>W Bro.</option><option>Bro.</option><option>Dr</option><option>Mr</option><option>Mrs</option><option>Ms</option>
           </select>
         </div>
-        <div><label for="firstName">First name *</label><input id="firstName" name="firstName" autocomplete="given-name" required></div>
-        <div><label for="lastName">Last name *</label><input id="lastName" name="lastName" autocomplete="family-name" required></div>
-        <div class="full"><label for="email">Email *</label><input id="email" name="email" type="email" autocomplete="email" required></div>
-        <div class="full">
-          <label for="rank">Rank / office *</label>
-          <select id="rank" name="rank" required>
-            <option value="">Select</option><option>Grand Master</option><option>Deputy Grand Master</option>
-            <option>Assistant Grand Master</option><option>Grand Secretary</option>
-            <option>Grand Chancellor / External Relations</option><option>Other</option>
-          </select>
-        </div>
-        <div id="otherRankWrap" class="full hidden"><label for="otherRank">Please specify rank / office *</label><input id="otherRank" name="otherRank"></div>
         <div>
-          <label for="hasCompanion">Accompanying spouse *</label>
-          <select id="hasCompanion" name="hasCompanion" required>
-            <option value="">Select</option><option>No</option><option>Yes</option>
-          </select>
+          <label for="lastName">Last name — Head of Delegation *</label>
+          <input id="lastName" name="lastName" autocomplete="family-name" required>
         </div>
-        <div id="companionWrap" class="hidden"><label for="companionName">Spouse full name *</label><input id="companionName" name="companionName"></div>
+        <div>
+          <label for="firstName">First name — Head of Delegation *</label>
+          <input id="firstName" name="firstName" autocomplete="given-name" required>
+        </div>
         <div class="full">
-          <label for="flightsBooked">Have flights been booked? *</label>
+          <label for="email">Email — Head of Delegation *</label>
+          <input id="email" name="email" type="email" autocomplete="email" required>
+        </div>
+        <div class="full">
+          <label for="rank">Rank / office — Head of Delegation *</label>
+          <input id="rank" name="rank" required>
+        </div>
+        <div class="full">
+          <label for="accompanyingPerson">Accompanying person / spouse</label>
+          <input id="accompanyingPerson" name="accompanyingPerson" placeholder="Full name, if applicable">
+        </div>
+        <div>
+          <label for="arrivalDate">Arrival date</label>
+          <input id="arrivalDate" name="arrivalDate" type="date">
+        </div>
+        <div>
+          <label for="departureDate">Departure date</label>
+          <input id="departureDate" name="departureDate" type="date">
+        </div>
+        <div>
+          <label for="flightsBooked">Flights booked? *</label>
           <select id="flightsBooked" name="flightsBooked" required>
             <option value="">Select</option><option>No</option><option>Yes</option>
           </select>
         </div>
-        <div><label for="arrivalDate">Arrival date</label><input id="arrivalDate" name="arrivalDate" type="date"></div>
-        <div><label for="arrivalTime">Arrival time</label><input id="arrivalTime" name="arrivalTime" type="time"></div>
-        <div class="full"><label for="arrivalFlight">Arrival flight</label><input id="arrivalFlight" name="arrivalFlight" autocomplete="off"></div>
-        <div><label for="departureDate">Departure date</label><input id="departureDate" name="departureDate" type="date"></div>
-        <div><label for="departureTime">Departure time</label><input id="departureTime" name="departureTime" type="time"></div>
-        <div class="full"><label for="departureFlight">Departure flight</label><input id="departureFlight" name="departureFlight" autocomplete="off"></div>
-        <div class="full notice">Please review all details before submitting. A confirmation will be sent to the email address entered above.</div>
-        <div class="full"><button id="submitButton" type="submit">Submit registration</button><div id="status" aria-live="polite"></div></div>
+        <div>
+          <label for="airline">Airline</label>
+          <input id="airline" name="airline">
+        </div>
+        <div class="full">
+          <label for="arrivalFlightAndTime">Arrival flight &amp; time</label>
+          <input id="arrivalFlightAndTime" name="arrivalFlightAndTime" placeholder="Example: A3 280 — 14:35">
+        </div>
+        <div class="full">
+          <label for="departureFlightAndTime">Departure flight &amp; time</label>
+          <input id="departureFlightAndTime" name="departureFlightAndTime" placeholder="Example: A3 281 — 18:10">
+        </div>
+        <div class="full">
+          <label for="allergies">Allergies / dietary restrictions</label>
+          <textarea id="allergies" name="allergies"></textarea>
+        </div>
+
+        <details>
+          <summary>Participant 2 — optional</summary>
+          <div class="participant-grid">
+            <div class="full"><label for="participant2FullName">Full name</label><input id="participant2FullName" name="participant2FullName"></div>
+            <div><label for="participant2Title">Salutation / title</label><input id="participant2Title" name="participant2Title"></div>
+            <div><label for="participant2Rank">Rank / office</label><input id="participant2Rank" name="participant2Rank"></div>
+            <div class="full"><label for="participant2Companion">Accompanying person</label><input id="participant2Companion" name="participant2Companion"></div>
+            <div class="full"><label for="participant2Allergies">Allergies / dietary restrictions</label><textarea id="participant2Allergies" name="participant2Allergies"></textarea></div>
+          </div>
+        </details>
+
+        <details>
+          <summary>Participant 3 — optional</summary>
+          <div class="participant-grid">
+            <div class="full"><label for="participant3FullName">Full name</label><input id="participant3FullName" name="participant3FullName"></div>
+            <div><label for="participant3Title">Salutation / title</label><input id="participant3Title" name="participant3Title"></div>
+            <div><label for="participant3Rank">Rank / office</label><input id="participant3Rank" name="participant3Rank"></div>
+            <div class="full"><label for="participant3Companion">Accompanying person</label><input id="participant3Companion" name="participant3Companion"></div>
+            <div class="full"><label for="participant3Allergies">Allergies / dietary restrictions</label><textarea id="participant3Allergies" name="participant3Allergies"></textarea></div>
+          </div>
+        </details>
+
+        <div class="full notice">
+          Please review all details before submitting. Your registration will be stored in
+          <strong>Form 18 19 Dec 2026</strong>, and a confirmation will be sent to the email address entered above.
+        </div>
+        <div class="full">
+          <button id="submitButton" type="submit">Submit registration</button>
+          <div id="status" aria-live="polite"></div>
+        </div>
       </div>
     </form>
 
-    <section id="success" class="hidden">
+    <section id="success" hidden>
       <h2>Thank you for your registration</h2>
-      <p>Your details have been received. Please check your email for confirmation.</p>
+      <p>Your details have been stored successfully.</p>
+      <p id="successEmail"></p>
     </section>
 
-    <footer><a href="https://www.nglgreece.org" target="_blank" rel="noopener">www.nglgreece.org</a></footer>
+    <footer>
+      <a href="https://www.nglgreece.org" target="_blank" rel="noopener">www.nglgreece.org</a>
+      <span class="build">BUILD NGLG-EN-CORFU-2026-R1</span>
+    </footer>
   </main>
 
   <script>
@@ -141,38 +202,10 @@
     const statusBox = document.getElementById('status');
     const button = document.getElementById('submitButton');
 
-    function toggleConditionalFields() {
-      const other = form.rank.value === 'Other';
-      document.getElementById('otherRankWrap').classList.toggle('hidden', !other);
-      form.otherRank.required = other;
-
-      const companion = form.hasCompanion.value === 'Yes';
-      document.getElementById('companionWrap').classList.toggle('hidden', !companion);
-      form.companionName.required = companion;
-    }
-
-    function loadGrandLodges() {
-      google.script.run
-        .withSuccessHandler(items => {
-          form.grandLodge.innerHTML = '<option value="">Select</option>' +
-            items.map(item => '<option></option>').join('');
-          [...form.grandLodge.options].slice(1).forEach((option, index) => {
-            option.value = items[index];
-            option.textContent = items[index];
-          });
-        })
-        .withFailureHandler(error => {
-          form.grandLodge.innerHTML = '<option value="">List unavailable</option>';
-          statusBox.textContent = error.message || 'Unable to load Grand Lodges.';
-        })
-        .getGrandLodges();
-    }
-
-    form.rank.addEventListener('change', toggleConditionalFields);
-    form.hasCompanion.addEventListener('change', toggleConditionalFields);
-
     form.addEventListener('submit', event => {
       event.preventDefault();
+      statusBox.classList.remove('error');
+
       if (!form.reportValidity()) return;
 
       button.disabled = true;
@@ -181,18 +214,27 @@
 
       google.script.run
         .withSuccessHandler(result => {
-          if (!result || !result.ok) throw new Error('Submission was not confirmed.');
-          form.classList.add('hidden');
-          document.getElementById('success').classList.remove('hidden');
+          if (!result || !result.ok) {
+            button.disabled = false;
+            statusBox.classList.add('error');
+            statusBox.textContent = (result && result.message) || 'Submission was not confirmed.';
+            return;
+          }
+
+          form.hidden = true;
+          const success = document.getElementById('success');
+          document.getElementById('successEmail').textContent =
+            'A confirmation has been sent to ' + result.email + '.';
+          success.hidden = false;
+          success.scrollIntoView({ behavior: 'smooth', block: 'start' });
         })
         .withFailureHandler(error => {
           button.disabled = false;
-          statusBox.textContent = error.message || 'Submission failed. Please try again.';
+          statusBox.classList.add('error');
+          statusBox.textContent = (error && error.message) || 'Submission failed. Please try again.';
         })
         .submitData(data);
     });
-
-    loadGrandLodges();
   </script>
 </body>
 </html>
