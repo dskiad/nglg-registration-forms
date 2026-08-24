@@ -4,6 +4,7 @@ Official registry and implementation notes for online registration forms of the 
 
 ## Foreign Delegations — Corfu 2026
 
+- **Language / audience:** English — invited foreign delegations
 - **Event:** Semi-Annual Grand Communication
 - **Dates:** 18–19 December 2026
 - **Location:** Corfu, Greece
@@ -16,16 +17,27 @@ Official registry and implementation notes for online registration forms of the 
 
 The form can also be reached through the official website under **External Relations → REGISTER IN Semi Annual Grand Communication – 18 & 19 Dec 2026 in Corfu**.
 
+## Greek dinner registrations
+
+- **Language / audience:** Greek — members of the National Grand Lodge of Greece
+- **Purpose:** Dinner attendance registration (not registration for the Grand Communication itself)
+- **Supported events:** 19 December 2026 and 15 May 2027
+- **Response destinations:** `DEC 2026` and `MAY 2027`
+- **Build:** `NGLG-7S-R6`
+- **Status:** Source ready for Google Apps Script deployment
+
+The Greek form filters lodges by Province/Region, uses the approved 36-item Grand Officer list, blocks duplicate mobile registrations, supports one-time personal messages, confirms the email address before submission, sends a confirmation email, and updates event statistics.
+
 ## Repository contents
 
-- `forms/foreign-delegations-corfu-2026/Code.gs` — production Apps Script backend connected to the response spreadsheet.
-- `forms/foreign-delegations-corfu-2026/Index.html` — responsive English webform aligned with the response columns.
-- `forms/foreign-delegations-corfu-2026/README.md` — deployment and testing instructions.
-- `forms/foreign-delegations-corfu-2026/links.json` — machine-readable public-link registry.
-- `forms/foreign-delegations-corfu-2026/Code.gs.example` — optional Script Properties reference.
+- `forms/foreign-delegations-corfu-2026/` — production English registration form, backend, link registry, and deployment notes.
+- `forms/greek-grand-communication/Code.gs` — Greek Apps Script backend.
+- `forms/greek-grand-communication/Index.html` — responsive Greek dinner-registration form.
+- `forms/greek-grand-communication/assets/` — form background, emblem, and Grand Master portrait.
+- `forms/greek-grand-communication/README.md` — Greek-form spreadsheet structure and deployment instructions.
 
 ## Privacy and security
 
-This public repository contains **no submitted registrations or participant data**. The response spreadsheet remains access-controlled in Google Drive.
+This public repository contains **no submitted registrations or participant data**. Response spreadsheets and personal mobile messages remain access-controlled in Google Drive.
 
-Never commit exported registrations, participant names, email addresses, travel details, credentials, or service-account files.
+Never commit exported registrations, participant names, email addresses, phone numbers, travel details, credentials, or service-account files.
