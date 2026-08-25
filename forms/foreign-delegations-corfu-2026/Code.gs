@@ -3,12 +3,12 @@
  * Production response destination:
  *   Spreadsheet: Form 18 19 Dec 2026
  *   Sheet tab: form1
- *   Build: NGLG-EN-CORFU-2026-R5
+ *   Build: NGLG-EN-CORFU-2026-R6
  */
 
 const SPREADSHEET_ID_ = '143R9sFxNZ08yJs6HD21YGaXqge2M5f3pYAOEpeyDUtY';
 const RESPONSE_SHEET_ = 'form1';
-const BUILD_ = 'NGLG-EN-CORFU-2026-R5';
+const BUILD_ = 'NGLG-EN-CORFU-2026-R6';
 const DEFAULT_ORGANIZER_EMAIL_ = 'grand.chancellor@nglgreece.gr';
 const EMAIL_EMBLEM_URL_ = 'https://raw.githubusercontent.com/dskiad/nglg-registration-forms/main/forms/foreign-delegations-corfu-2026/assets/nglg-emblem.jpg.b64';
 const EMAIL_CHANCELLOR_PHOTO_URL_ = 'https://raw.githubusercontent.com/dskiad/nglg-registration-forms/main/forms/foreign-delegations-corfu-2026/assets/grand-chancellor.jpg.b64';
@@ -193,6 +193,195 @@ function normalizeAndValidate_(formData) {
   }
 
   return data;
+}
+
+
+function onOpen() {
+  SpreadsheetApp.getUi()
+    .createMenu('NGLG Registration')
+    .addItem('Enable manual email buttons', 'setupManualEmailButtons')
+    .addItem('Refresh manual email buttons', 'refreshAllManualEmailButtons_')
+    .addToUi();
+}
+
+/**
+ * Run once from the Apps Script editor or the NGLG Registration menu.
+ * This creates the authorised edit trigger required for sending email.
+ */
+function setupManualEmailButtons() {
+  ScriptApp.getProjectTriggers()
+    .filter(trigger => trigger.getHandlerFunction() === 'handleManualEmailEdit')
+    .forEach(trigger => ScriptApp.deleteTrigger(trigger));
+
+  ScriptApp.newTrigger('handleManualEmailEdit')
+    .forSpreadsheet(SPREADSHEET_ID_)
+    .onEdit()
+    .create();
+
+  refreshAllManualEmailButtons_();
+  SpreadsheetApp.getActive().toast(
+    'Manual confirmation-email buttons are enabled.',
+    'NGLG Registration',
+    6
+  );
+}
+
+function refreshAllManualEmailButtons_() {
+  const sheet = getValidatedResponseSheet_();
+  sheet.getRange(1, 27).setValue('SEND EMAIL');
+
+  const lastRow = Math.max(sheet.getLastRow(), 2);
+  const rowCount = lastRow - 1;
+  const values = sheet.getRange(2, 1, rowCount, 27).getDisplayValues();
+  const buttonRange = sheet.getRange(2, 27, rowCount, 1);
+  buttonRange.clearDataValidations().clearContent().clearNote();
+
+  const checkboxRule = SpreadsheetApp.newDataValidation()
+    .requireCheckbox()
+    .setAllowInvalid(false)
+    .setHelpText('Tick to send the registration confirmation email.')
+    .build();
+
+  values.forEach((row, index) => {
+    const timestamp = String(row[0] || '').trim();
+    const email = String(row[25] || '').trim();
+    if (!timestamp && email) {
+      const cell = sheet.getRange(index + 2, 27);
+      cell.setDataValidation(checkboxRule);
+      cell.setValue(false);
+      cell.setNote('Tick this box to send the same confirmation email as the web form.');
+    }
+  });
+}
+
+function handleManualEmailEdit(e) {
+  if (!e || !e.range || e.source.getId() !== SPREADSHEET_ID_) {
+    return;
+  }
+
+  const sheet = e.range.getSheet();
+  const row = e.range.getRow();
+  const column = e.range.getColumn();
+
+  if (sheet.getName() !== RESPONSE_SHEET_ || row < 2) {
+    return;
+  }
+
+  if (column !== 27 || String(e.value || '').toUpperCase() !== 'TRUE') {
+    refreshManualEmailButton_(sheet, row);
+    return;
+  }
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+
+  try {
+    const timestamp = sheet.getRange(row, 1).getValue();
+    const email = String(sheet.getRange(row, 26).getDisplayValue() || '').trim();
+    const buttonCell = sheet.getRange(row, 27);
+
+    if (timestamp || !email) {
+      refreshManualEmailButton_(sheet, row);
+      return;
+    }
+
+    buttonCell.setNote('Sending confirmation email…');
+    const rowValues = sheet.getRange(row, 1, 1, 26).getDisplayValues()[0];
+    const data = normalizeAndValidate_(manualRowToFormData_(rowValues));
+    const emailResult = sendConfirmation_(data);
+
+    if (!emailResult.userEmailSent) {
+      buttonCell.setValue(false);
+      buttonCell.setNote('Email was not sent: ' + (emailResult.errors.join(' | ') || 'Unknown email error'));
+      e.source.toast(
+        'The confirmation email could not be sent. The timestamp was not added.',
+        'NGLG Registration',
+        8
+      );
+      return;
+    }
+
+    const sentAt = new Date();
+    sheet.getRange(row, 1)
+      .setValue(sentAt)
+      .setNumberFormat('dd/MM/yyyy HH:mm:ss');
+    buttonCell.clearContent().clearDataValidations();
+    buttonCell.setNote(
+      'Confirmation sent manually to ' + data.email +
+      ' on ' + Utilities.formatDate(sentAt, e.source.getSpreadsheetTimeZone(), 'dd/MM/yyyy HH:mm:ss') +
+      (emailResult.organizerEmailSent ? '' : '. The organiser notification was not delivered.')
+    );
+    SpreadsheetApp.flush();
+
+    e.source.toast(
+      'Confirmation email sent to ' + data.email + '. Timestamp added in column A.',
+      'NGLG Registration',
+      8
+    );
+  } catch (error) {
+    const buttonCell = sheet.getRange(row, 27);
+    buttonCell.setValue(false);
+    buttonCell.setNote('Email was not sent: ' + String(error && error.message ? error.message : error));
+    e.source.toast(
+      'The confirmation email could not be sent. Check the data in this row.',
+      'NGLG Registration',
+      8
+    );
+    console.error(error);
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function refreshManualEmailButton_(sheet, row) {
+  const timestamp = sheet.getRange(row, 1).getValue();
+  const email = String(sheet.getRange(row, 26).getDisplayValue() || '').trim();
+  const cell = sheet.getRange(row, 27);
+
+  if (!timestamp && email) {
+    const rule = SpreadsheetApp.newDataValidation()
+      .requireCheckbox()
+      .setAllowInvalid(false)
+      .setHelpText('Tick to send the registration confirmation email.')
+      .build();
+    cell.setDataValidation(rule);
+    if (cell.getValue() !== true) {
+      cell.setValue(false);
+    }
+    cell.setNote('Tick this box to send the same confirmation email as the web form.');
+  } else {
+    cell.clearContent().clearDataValidations().clearNote();
+  }
+}
+
+function manualRowToFormData_(row) {
+  return {
+    grandLodge: row[1],
+    foundingYear: row[2],
+    lastName: row[3],
+    firstName: row[4],
+    title: row[5],
+    rank: row[6],
+    accompanyingPerson: row[7],
+    arrivalDate: row[8],
+    departureDate: row[9],
+    flightsBooked: row[10],
+    airline: row[11],
+    arrivalFlightAndTime: row[12],
+    departureFlightAndTime: row[13],
+    allergies: row[14],
+    participant2FullName: row[15],
+    participant2Title: row[16],
+    participant2Rank: row[17],
+    participant2Companion: row[18],
+    participant2Allergies: row[19],
+    participant3FullName: row[20],
+    participant3Title: row[21],
+    participant3Rank: row[22],
+    participant3Companion: row[23],
+    participant3Allergies: row[24],
+    email: row[25]
+  };
 }
 
 function sendConfirmation_(data) {
