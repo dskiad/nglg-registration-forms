@@ -2,7 +2,7 @@
 
 ## Live form
 
-[Open the active English registration form](https://script.google.com/a/macros/nglgreece.gr/s/AKfycbyMTD6JF8UGql8p7XMij_EIOBigcYzQZxug3ap4DqDLqExORIiA37ykqx74GkCthsdeBQ/exec)
+[Open the active English registration form](https://script.google.com/a/macros/nglgreece.gr/s/AKfycbxlT3ubfUS6TYloOAfd1BNSq4WvnA9_ekRJIyOUSGSC34Ie2oEyXJhVAM2fLqT9TNS0OA/exec)
 
 ## Event
 
@@ -16,7 +16,7 @@
 The production backend in `Code.gs` writes to:
 
 - Spreadsheet: **Form 18 19 Dec 2026**
-- Spreadsheet ID: `1HrlJceDivajt2ENWmlaZSR7U5ScMkxL7OoNu-KMh9_c`
+- Spreadsheet ID: `143R9sFxNZ08yJs6HD21YGaXqge2M5f3pYAOEpeyDUtY`
 - Sheet tab: `form1`
 - Build: `NGLG-EN-CORFU-2026-R1`
 

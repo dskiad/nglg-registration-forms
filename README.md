@@ -9,11 +9,11 @@ Official registry and implementation notes for online registration forms of the 
 - **Dates:** 18–19 December 2026
 - **Location:** Corfu, Greece
 - **Status:** Active
-- **Public registration form:** [Open the English registration form](https://script.google.com/a/macros/nglgreece.gr/s/AKfycbyMTD6JF8UGql8p7XMij_EIOBigcYzQZxug3ap4DqDLqExORIiA37ykqx74GkCthsdeBQ/exec)
+- **Public registration form:** [Open the English registration form](https://script.google.com/a/macros/nglgreece.gr/s/AKfycbxlT3ubfUS6TYloOAfd1BNSq4WvnA9_ekRJIyOUSGSC34Ie2oEyXJhVAM2fLqT9TNS0OA/exec)
 - **Official website:** [nglgreece.org/en](https://nglgreece.org/en/)
 - **Response destination:** `Form 18 19 Dec 2026` → `form1`
 - **Build:** `NGLG-EN-CORFU-2026-R1`
-- **Last code update:** 24 August 2026
+- **Last code update:** 25 August 2026
 
 The form can also be reached through the official website under **External Relations → REGISTER IN Semi Annual Grand Communication – 18 & 19 Dec 2026 in Corfu**.
 

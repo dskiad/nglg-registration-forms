@@ -1,5 +1,5 @@
 {
-  "lastVerified": "2026-08-24",
+  "lastVerified": "2026-08-25",
   "forms": [
     {
       "id": "foreign-delegations-corfu-2026",
@@ -12,8 +12,9 @@
         "2026-12-19"
       ],
       "language": "en",
-      "publicUrl": "https://script.google.com/a/macros/nglgreece.gr/s/AKfycbyMTD6JF8UGql8p7XMij_EIOBigcYzQZxug3ap4DqDLqExORIiA37ykqx74GkCthsdeBQ/exec",
-      "officialWebsite": "https://nglgreece.org/en/"
+      "publicUrl": "https://script.google.com/a/macros/nglgreece.gr/s/AKfycbxlT3ubfUS6TYloOAfd1BNSq4WvnA9_ekRJIyOUSGSC34Ie2oEyXJhVAM2fLqT9TNS0OA/exec",
+      "officialWebsite": "https://nglgreece.org/en/",
+      "responseSpreadsheetUrl": "https://docs.google.com/spreadsheets/d/143R9sFxNZ08yJs6HD21YGaXqge2M5f3pYAOEpeyDUtY/edit?usp=sharing"
     }
   ]
 }
