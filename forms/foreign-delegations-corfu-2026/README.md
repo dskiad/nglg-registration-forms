@@ -40,7 +40,8 @@ The first 25 columns are validated before every write. Column Z is used for **Em
 - The welcome card includes a close button and right-to-left presentation for Hebrew and Arabic.
 - Registrations are stored before email delivery is attempted, so an email-service error cannot lose the submitted data.
 - Confirmation email to the registrant and notification email to the Grand Chancellor are sent independently.
-- Confirmation emails include the NGLG emblem in the header and the Grand Chancellor portrait beside the signature.\n- Confirmation emails include practical travel information covering electricity and plugs, complimentary accommodation, airport transfers and official local transport.
+- Confirmation emails include the NGLG emblem in the header and the Grand Chancellor portrait beside the signature.
+- Confirmation emails include practical travel information covering electricity and plugs, complimentary accommodation, airport transfers and official local transport.
 
 ## Manual rows and confirmation email
 
