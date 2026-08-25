@@ -3,12 +3,12 @@
  * Production response destination:
  *   Spreadsheet: Form 18 19 Dec 2026
  *   Sheet tab: form1
- *   Build: NGLG-EN-CORFU-2026-R6
+ *   Build: NGLG-EN-CORFU-2026-R7
  */
 
 const SPREADSHEET_ID_ = '143R9sFxNZ08yJs6HD21YGaXqge2M5f3pYAOEpeyDUtY';
 const RESPONSE_SHEET_ = 'form1';
-const BUILD_ = 'NGLG-EN-CORFU-2026-R6';
+const BUILD_ = 'NGLG-EN-CORFU-2026-R7';
 const DEFAULT_ORGANIZER_EMAIL_ = 'grand.chancellor@nglgreece.gr';
 const EMAIL_EMBLEM_URL_ = 'https://raw.githubusercontent.com/dskiad/nglg-registration-forms/main/forms/foreign-delegations-corfu-2026/assets/nglg-emblem.jpg.b64';
 const EMAIL_CHANCELLOR_PHOTO_URL_ = 'https://raw.githubusercontent.com/dskiad/nglg-registration-forms/main/forms/foreign-delegations-corfu-2026/assets/grand-chancellor.jpg.b64';
@@ -423,6 +423,16 @@ function sendConfirmation_(data) {
         row_('Participant 2', participantSummary_(data, 2)) +
         row_('Participant 3', participantSummary_(data, 3)) +
       '</table>' +
+      '<div style="margin-top:24px;padding:18px;background:#f7f3e8;border-left:4px solid #c99a35">' +
+        '<h3 style="margin:0 0 14px;color:#06244a">Travel information</h3>' +
+        '<p style="margin:0 0 6px"><strong>Electricity and plug adaptors</strong></p>' +
+        '<p style="margin:0 0 14px;line-height:1.55">Greece uses 230V electricity at 50Hz, with European Type C and Type F plugs. Visitors from the United Kingdom, Ireland and other countries using different sockets should bring a suitable plug adaptor. Most modern phone and laptop chargers are dual-voltage, but please check your device before use.</p>' +
+        '<p style="margin:0 0 6px"><strong>Accommodation</strong></p>' +
+        '<p style="margin:0 0 14px;line-height:1.55">Your hotel accommodation will be arranged and provided in full, with the compliments of the National Grand Lodge of Greece, in recognition of your status as a distinguished guest.</p>' +
+        '<p style="margin:0 0 6px"><strong>Airport transfers and local movements</strong></p>' +
+        '<p style="margin:0 0 14px;line-height:1.55">All official transfers to and from the airport, as well as transportation connected with the official programme, will be arranged for you. Further practical details, including meeting points and contact information, will be communicated before your arrival.</p>' +
+        '<p style="margin:0;line-height:1.55"><strong>We wish you a pleasant journey and look forward to extending our warm Greek hospitality.</strong></p>' +
+      '</div>' +
       '<table role="presentation" style="border-collapse:collapse;margin-top:24px"><tr>' +
         '<td style="vertical-align:middle;padding:0 10px 0 0">' + chancellorHtml + '</td>' +
         '<td style="vertical-align:middle;line-height:1.45">For the Organisation<br><strong>The Grand Chancellor</strong><br>RW Bro. Dimitrios Skiadopoulos</td>' +
@@ -441,6 +451,19 @@ function sendConfirmation_(data) {
     'Rank / Office: ' + data.rank,
     'Arrival: ' + ([data.arrivalDate, data.arrivalFlightAndTime].filter(Boolean).join(' — ') || '—'),
     'Departure: ' + ([data.departureDate, data.departureFlightAndTime].filter(Boolean).join(' — ') || '—'),
+    '',
+    'TRAVEL INFORMATION',
+    '',
+    'Electricity and plug adaptors',
+    'Greece uses 230V electricity at 50Hz, with European Type C and Type F plugs. Visitors from the United Kingdom, Ireland and other countries using different sockets should bring a suitable plug adaptor. Most modern phone and laptop chargers are dual-voltage, but please check your device before use.',
+    '',
+    'Accommodation',
+    'Your hotel accommodation will be arranged and provided in full, with the compliments of the National Grand Lodge of Greece, in recognition of your status as a distinguished guest.',
+    '',
+    'Airport transfers and local movements',
+    'All official transfers to and from the airport, as well as transportation connected with the official programme, will be arranged for you. Further practical details, including meeting points and contact information, will be communicated before your arrival.',
+    '',
+    'We wish you a pleasant journey and look forward to extending our warm Greek hospitality.',
     '',
     'For the Organisation',
     'The Grand Chancellor',
