@@ -18,7 +18,7 @@ The production backend in `Code.gs` writes to:
 - Spreadsheet: **Form 18 19 Dec 2026**
 - Spreadsheet ID: `143R9sFxNZ08yJs6HD21YGaXqge2M5f3pYAOEpeyDUtY`
 - Sheet tab: `form1`
-- Build: `NGLG-EN-CORFU-2026-R3`
+- Build: `NGLG-EN-CORFU-2026-R4`
 
 The first 25 columns are validated before every write. Column Z is used for **Email (Head of Delegation)** and is created automatically if the header is blank. If any earlier header differs, the submission stops before writing, preventing column misalignment.
 
@@ -40,6 +40,7 @@ The first 25 columns are validated before every write. Column Z is used for **Em
 - The welcome card includes a close button and right-to-left presentation for Hebrew and Arabic.
 - Registrations are stored before email delivery is attempted, so an email-service error cannot lose the submitted data.
 - Confirmation email to the registrant and notification email to the Grand Chancellor are sent independently.
+- Confirmation emails include the NGLG emblem in the header and the Grand Chancellor portrait beside the signature.
 
 ## Deployment
 
@@ -50,7 +51,7 @@ The first 25 columns are validated before every write. Column Z is used for **Em
 5. Confirm the result reports:
    - `spreadsheet: Form 18 19 Dec 2026`
    - `sheet: form1`
-   - `build: NGLG-EN-CORFU-2026-R3`
+   - `build: NGLG-EN-CORFU-2026-R4`
    - `emailHeader: Email (Head of Delegation)`
    - `organizerEmail: grand.chancellor@nglgreece.gr`
    - a positive `remainingDailyEmailQuota`
