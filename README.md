@@ -24,7 +24,8 @@ The form can also be reached through the official website under **External Relat
 - **Supported events:** 19 December 2026 and 15 May 2027
 - **Response destinations:** `DEC 2026` and `MAY 2027`
 - **Build:** `NGLG-7S-R6`
-- **Status:** Source ready for Google Apps Script deployment
+- **Public registration form:** [Open the Greek registration form](https://script.google.com/macros/s/AKfycbztmwT5CG1FtDICWeZDKsuM3vXT99kvVGfWcPIjNvhfcj9PP0qFxB27CfMxWIGg7UCfsg/exec)
+- **Status:** Active
 
 The Greek form filters lodges by Province/Region, uses the approved 36-item Grand Officer list, blocks duplicate mobile registrations, supports one-time personal messages, confirms the email address before submission, sends a confirmation email, and updates event statistics.
 
