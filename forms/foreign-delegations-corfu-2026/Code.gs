@@ -3,12 +3,12 @@
  * Production response destination:
  *   Spreadsheet: Form 18 19 Dec 2026
  *   Sheet tab: form1
- *   Build: NGLG-EN-CORFU-2026-R4
+ *   Build: NGLG-EN-CORFU-2026-R5
  */
 
 const SPREADSHEET_ID_ = '143R9sFxNZ08yJs6HD21YGaXqge2M5f3pYAOEpeyDUtY';
 const RESPONSE_SHEET_ = 'form1';
-const BUILD_ = 'NGLG-EN-CORFU-2026-R4';
+const BUILD_ = 'NGLG-EN-CORFU-2026-R5';
 const DEFAULT_ORGANIZER_EMAIL_ = 'grand.chancellor@nglgreece.gr';
 const EMAIL_EMBLEM_URL_ = 'https://raw.githubusercontent.com/dskiad/nglg-registration-forms/main/forms/foreign-delegations-corfu-2026/assets/nglg-emblem.jpg.b64';
 const EMAIL_CHANCELLOR_PHOTO_URL_ = 'https://raw.githubusercontent.com/dskiad/nglg-registration-forms/main/forms/foreign-delegations-corfu-2026/assets/grand-chancellor.jpg.b64';
@@ -201,10 +201,10 @@ function sendConfirmation_(data) {
 
   const emailImages = getEmailImages_();
   const emblemHtml = emailImages.inlineImages.nglgEmblem
-    ? '<img src="cid:nglgEmblem" width="50" height="50" alt="NGLG emblem" style="display:block;width:50px;height:50px;object-fit:cover;border-radius:6px">'
+    ? '<img src="cid:nglgEmblem" width="80" height="80" alt="NGLG emblem" style="display:block;width:80px;height:80px;object-fit:cover;border-radius:6px">'
     : '';
   const chancellorHtml = emailImages.inlineImages.grandChancellor
-    ? '<img src="cid:grandChancellor" width="40" height="40" alt="RW Bro. Dimitrios Skiadopoulos" style="display:block;width:40px;height:40px;object-fit:cover;border-radius:50%;border:1px solid #c99a35">'
+    ? '<img src="cid:grandChancellor" width="50" height="50" alt="RW Bro. Dimitrios Skiadopoulos" style="display:block;width:50px;height:50px;object-fit:cover;border-radius:50%;border:1px solid #c99a35">'
     : '';
 
   const subject = 'NGLG Registration Confirmation — Corfu 18–19 December 2026';
