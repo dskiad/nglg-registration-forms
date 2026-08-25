@@ -2,12 +2,15 @@
 
 This repository contains two independent Google Apps Script web applications for the National Grand Lodge of Greece. Each application has its own source folder, backend, interface, Google Sheet destination and deployment.
 
+- **GitHub repository:** [dskiad/nglg-registration-forms](https://github.com/dskiad/nglg-registration-forms)
+- **Application index:** [APP_INDEX.md](https://github.com/dskiad/nglg-registration-forms/blob/main/APP_INDEX.md)
+
 ## Applications at a glance
 
-| Application | Language and audience | Purpose | Source | Data destination | Build | Deployment |
+| Application | Language and audience | Purpose | GitHub application page | Deployment URL | Data destination | Build |
 |---|---|---|---|---|---|---|
-| Foreign Delegations — Corfu 2026 | English — invited foreign delegations | Registration and travel information for the Semi-Annual Grand Communication in Corfu, 18–19 December 2026 | [Open source folder](forms/foreign-delegations-corfu-2026/) | `Form 18 19 Dec 2026` → `form1` | `NGLG-EN-CORFU-2026-R7` | [Open live form](https://script.google.com/a/macros/nglgreece.gr/s/AKfycbxlT3ubfUS6TYloOAfd1BNSq4WvnA9_ekRJIyOUSGSC34Ie2oEyXJhVAM2fLqT9TNS0OA/exec) |
-| Greek Dinner Registration | Greek — members of the National Grand Lodge of Greece | Dinner attendance for the Grand Communications of 19 December 2026 and 15 May 2027 | [Open source folder](forms/greek-grand-communication/) | Configured private Google Sheet → `DEC 2026`, `MAY 2027` and `Στατιστικά` | `NGLG-7S-R6` | Source ready; production URL is not recorded in this repository |
+| Foreign Delegations — Corfu 2026 | English — invited foreign delegations | Registration and travel information for the Semi-Annual Grand Communication in Corfu, 18–19 December 2026 | [GitHub source and files](https://github.com/dskiad/nglg-registration-forms/tree/main/forms/foreign-delegations-corfu-2026) | [Open deployed Web App](https://script.google.com/a/macros/nglgreece.gr/s/AKfycbxlT3ubfUS6TYloOAfd1BNSq4WvnA9_ekRJIyOUSGSC34Ie2oEyXJhVAM2fLqT9TNS0OA/exec) | `Form 18 19 Dec 2026` → `form1` | `NGLG-EN-CORFU-2026-R7` |
+| Greek Dinner Registration | Greek — members of the National Grand Lodge of Greece | Dinner attendance for the Grand Communications of 19 December 2026 and 15 May 2027 | [GitHub source and files](https://github.com/dskiad/nglg-registration-forms/tree/main/forms/greek-grand-communication) | **Not recorded in GitHub yet** — add the permanent URL ending in `/exec` after deployment | Configured private Google Sheet → `DEC 2026`, `MAY 2027` and `Στατιστικά` | `NGLG-7S-R6` |
 
 ## 1. Foreign Delegations — Corfu 2026
 
