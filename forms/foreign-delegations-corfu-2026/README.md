@@ -18,7 +18,7 @@ The production backend in `Code.gs` writes to:
 - Spreadsheet: **Form 18 19 Dec 2026**
 - Spreadsheet ID: `143R9sFxNZ08yJs6HD21YGaXqge2M5f3pYAOEpeyDUtY`
 - Sheet tab: `form1`
-- Build: `NGLG-EN-CORFU-2026-R2`
+- Build: `NGLG-EN-CORFU-2026-R3`
 
 The first 25 columns are validated before every write. Column Z is used for **Email (Head of Delegation)** and is created automatically if the header is blank. If any earlier header differs, the submission stops before writing, preventing column misalignment.
 
@@ -38,6 +38,8 @@ The first 25 columns are validated before every write. Column Z is used for **Em
 - Arrival date, departure date, airline, arrival flight/time and departure flight/time remain hidden unless **Flights booked?** is set to **Yes**.
 - Selecting a Grand Lodge displays a five-second welcome card in English and the relevant local language or languages.
 - The welcome card includes a close button and right-to-left presentation for Hebrew and Arabic.
+- Registrations are stored before email delivery is attempted, so an email-service error cannot lose the submitted data.
+- Confirmation email to the registrant and notification email to the Grand Chancellor are sent independently.
 
 ## Deployment
 
@@ -48,14 +50,17 @@ The first 25 columns are validated before every write. Column Z is used for **Em
 5. Confirm the result reports:
    - `spreadsheet: Form 18 19 Dec 2026`
    - `sheet: form1`
-   - `build: NGLG-EN-CORFU-2026-R2`
+   - `build: NGLG-EN-CORFU-2026-R3`
+   - `emailHeader: Email (Head of Delegation)`
+   - `organizerEmail: grand.chancellor@nglgreece.gr`
+   - a positive `remainingDailyEmailQuota`
 6. Select **Deploy → Manage deployments → Edit → New version → Deploy**.
 7. Open the `/exec` URL in a private/incognito browser and submit one clearly labelled test registration.
 8. Confirm that one new row appears in `form1` and that the confirmation email arrives.
 
 ## Optional email copy
 
-Set `ORGANIZER_EMAIL` in **Project Settings → Script Properties** if the organiser should receive a copy of each confirmation.
+The default organiser notification address is `grand.chancellor@nglgreece.gr`. Set `ORGANIZER_EMAIL` in **Project Settings → Script Properties** only if it needs to be overridden.
 
 ## Privacy
 

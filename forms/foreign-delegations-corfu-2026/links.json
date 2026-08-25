@@ -15,7 +15,8 @@
       "publicUrl": "https://script.google.com/a/macros/nglgreece.gr/s/AKfycbxlT3ubfUS6TYloOAfd1BNSq4WvnA9_ekRJIyOUSGSC34Ie2oEyXJhVAM2fLqT9TNS0OA/exec",
       "officialWebsite": "https://nglgreece.org/en/",
       "responseSpreadsheetUrl": "https://docs.google.com/spreadsheets/d/143R9sFxNZ08yJs6HD21YGaXqge2M5f3pYAOEpeyDUtY/edit?usp=sharing",
-      "build": "NGLG-EN-CORFU-2026-R2"
+      "build": "NGLG-EN-CORFU-2026-R3",
+      "organizerEmail": "grand.chancellor@nglgreece.gr"
     }
   ]
 }

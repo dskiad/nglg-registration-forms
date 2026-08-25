@@ -232,7 +232,7 @@
 
     <footer>
       <a href="https://www.nglgreece.org" target="_blank" rel="noopener">www.nglgreece.org</a>
-      <span class="build">BUILD NGLG-EN-CORFU-2026-R2</span>
+      <span class="build">BUILD NGLG-EN-CORFU-2026-R3</span>
     </footer>
   </main>
 
@@ -377,8 +377,21 @@
 
           form.hidden = true;
           const success = document.getElementById('success');
-          document.getElementById('successEmail').textContent =
-            'A confirmation has been sent to ' + result.email + '.';
+          const emailStatus = document.getElementById('successEmail');
+          if (result.userEmailSent) {
+            emailStatus.textContent = 'A confirmation has been sent to ' + result.email + '.';
+          } else {
+            emailStatus.textContent = 'Your registration was stored, but the confirmation email could not be sent. Please contact ' +
+              (result.organizerEmail || 'grand.chancellor@nglgreece.gr') + '.';
+            emailStatus.style.color = '#9e2020';
+            emailStatus.style.fontWeight = '700';
+          }
+          if (!result.organizerEmailSent) {
+            const organiserWarning = document.createElement('p');
+            organiserWarning.textContent = 'The automatic notification to the organiser was not delivered; your registration remains safely stored.';
+            organiserWarning.style.color = '#9e2020';
+            success.appendChild(organiserWarning);
+          }
           success.hidden = false;
           success.scrollIntoView({ behavior: 'smooth', block: 'start' });
         })

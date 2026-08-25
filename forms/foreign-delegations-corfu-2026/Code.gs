@@ -3,12 +3,13 @@
  * Production response destination:
  *   Spreadsheet: Form 18 19 Dec 2026
  *   Sheet tab: form1
- *   Build: NGLG-EN-CORFU-2026-R2
+ *   Build: NGLG-EN-CORFU-2026-R3
  */
 
 const SPREADSHEET_ID_ = '143R9sFxNZ08yJs6HD21YGaXqge2M5f3pYAOEpeyDUtY';
 const RESPONSE_SHEET_ = 'form1';
-const BUILD_ = 'NGLG-EN-CORFU-2026-R2';
+const BUILD_ = 'NGLG-EN-CORFU-2026-R3';
+const DEFAULT_ORGANIZER_EMAIL_ = 'grand.chancellor@nglgreece.gr';
 
 const RESPONSE_HEADERS_ = [
   'Timestamp',
@@ -94,13 +95,19 @@ function submitData(formData) {
     lock.releaseLock();
   }
 
-  sendConfirmation_(data);
+  const emailResult = sendConfirmation_(data);
 
   return {
     ok: true,
     build: BUILD_,
     message: 'Registration received successfully.',
-    email: data.email
+    email: data.email,
+    stored: true,
+    userEmailSent: emailResult.userEmailSent,
+    organizerEmailSent: emailResult.organizerEmailSent,
+    emailSent: emailResult.userEmailSent && emailResult.organizerEmailSent,
+    organizerEmail: emailResult.organizerEmail,
+    emailErrors: emailResult.errors
   };
 }
 
@@ -188,7 +195,7 @@ function normalizeAndValidate_(formData) {
 
 function sendConfirmation_(data) {
   const organizerEmail = PropertiesService.getScriptProperties()
-    .getProperty('ORGANIZER_EMAIL') || '';
+    .getProperty('ORGANIZER_EMAIL') || DEFAULT_ORGANIZER_EMAIL_;
 
   const subject = 'NGLG Registration Confirmation — Corfu 18–19 December 2026';
   const html = '<div style="font-family:Arial,sans-serif;max-width:680px;margin:auto;color:#17233b">' +
@@ -218,18 +225,61 @@ function sendConfirmation_(data) {
     '</div>' +
   '</div>';
 
-  const message = {
-    to: data.email,
-    subject: subject,
-    htmlBody: html,
-    name: 'National Grand Lodge of Greece'
+  const plainBody = [
+    'Dear ' + data.title + ' ' + data.lastName + ',',
+    '',
+    'Your registration for the Semi-Annual Grand Communication in Corfu, 18–19 December 2026, has been received.',
+    '',
+    'Grand Lodge: ' + (data.grandLodge || '—'),
+    'Head of Delegation: ' + data.firstName + ' ' + data.lastName,
+    'Email: ' + data.email,
+    'Rank / Office: ' + data.rank,
+    'Arrival: ' + ([data.arrivalDate, data.arrivalFlightAndTime].filter(Boolean).join(' — ') || '—'),
+    'Departure: ' + ([data.departureDate, data.departureFlightAndTime].filter(Boolean).join(' — ') || '—'),
+    '',
+    'For the Organisation',
+    'The Grand Chancellor',
+    'RW Bro. Dimitrios Skiadopoulos'
+  ].join('\n');
+
+  const result = {
+    organizerEmail: organizerEmail,
+    userEmailSent: false,
+    organizerEmailSent: false,
+    errors: []
   };
 
-  if (organizerEmail) {
-    message.cc = organizerEmail;
+  try {
+    MailApp.sendEmail({
+      to: data.email,
+      replyTo: organizerEmail,
+      subject: subject,
+      body: plainBody,
+      htmlBody: html,
+      name: 'National Grand Lodge of Greece'
+    });
+    result.userEmailSent = true;
+  } catch (error) {
+    result.errors.push('User confirmation: ' + String(error && error.message ? error.message : error));
+    console.error(result.errors[result.errors.length - 1]);
   }
 
-  MailApp.sendEmail(message);
+  try {
+    MailApp.sendEmail({
+      to: organizerEmail,
+      replyTo: data.email,
+      subject: 'New foreign-delegation registration — ' + data.grandLodge,
+      body: 'A new registration has been stored.\n\n' + plainBody,
+      htmlBody: '<p><strong>A new registration has been stored.</strong></p>' + html,
+      name: 'NGLG Registration System'
+    });
+    result.organizerEmailSent = true;
+  } catch (error) {
+    result.errors.push('Organizer notification: ' + String(error && error.message ? error.message : error));
+    console.error(result.errors[result.errors.length - 1]);
+  }
+
+  return result;
 }
 
 function participantSummary_(data, number) {
@@ -272,12 +322,17 @@ function escapeHtml_(value) {
  */
 function testConnection() {
   const sheet = getValidatedResponseSheet_();
+  const organizerEmail = PropertiesService.getScriptProperties()
+    .getProperty('ORGANIZER_EMAIL') || DEFAULT_ORGANIZER_EMAIL_;
 
   return {
     ok: true,
     build: BUILD_,
     spreadsheet: SpreadsheetApp.openById(SPREADSHEET_ID_).getName(),
     sheet: sheet.getName(),
-    lastRow: sheet.getLastRow()
+    lastRow: sheet.getLastRow(),
+    emailHeader: sheet.getRange(1, RESPONSE_HEADERS_.length).getDisplayValue(),
+    organizerEmail: organizerEmail,
+    remainingDailyEmailQuota: MailApp.getRemainingDailyQuota()
   };
 }
