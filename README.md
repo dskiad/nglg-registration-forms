@@ -1,6 +1,6 @@
 # NGLG Registration Forms
 
-Official registry and implementation notes for online registration forms of the National Grand Lodge of Greece.
+Official registry and implementation notes for online registration forms of the National Grand Lodge of Greece.\n\n## Application index\n\n[Open the complete index of applications and their functions](APP_INDEX.md)
 
 ## Foreign Delegations — Corfu 2026
 
