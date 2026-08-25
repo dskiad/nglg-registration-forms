@@ -49,6 +49,28 @@
     .participant-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; padding:0 16px 17px; }
     .participant-grid .full { grid-column:1/-1; }
     .notice { padding:13px 15px; border-left:4px solid var(--gold); background:#fff8df; font-size:13px; line-height:1.5; }
+    [hidden] { display:none !important; }
+    .flight-details-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .flight-details-grid .full { grid-column:1/-1; }
+    .welcome-overlay {
+      display:none; position:fixed; inset:0; z-index:50; padding:18px; place-items:center;
+      background:rgba(2,12,25,.74); backdrop-filter:blur(6px);
+    }
+    .welcome-overlay.open { display:grid; }
+    .welcome-card {
+      position:relative; width:min(620px,100%); max-height:88vh; overflow:auto;
+      padding:32px 28px 25px; border:2px solid var(--gold); border-radius:18px;
+      background:linear-gradient(145deg,#fffdf8,#f3ead5); color:var(--navy);
+      box-shadow:0 26px 90px rgba(0,0,0,.65); text-align:center;
+    }
+    .welcome-card h2 { margin:0 34px 18px; font:700 25px "Playfair Display",serif; }
+    .welcome-message { margin:10px 0; padding:11px 13px; border:1px solid rgba(201,154,53,.55); border-radius:10px; background:#fff; line-height:1.5; }
+    .welcome-language { display:block; margin-bottom:4px; color:#8b6416; font-size:12px; font-weight:700; text-transform:uppercase; }
+    .welcome-close {
+      position:absolute; top:10px; right:10px; width:38px; min-height:38px; margin:0; padding:0;
+      border-radius:50%; font-size:20px; line-height:1; background:var(--navy);
+    }
+    .welcome-timer { margin:16px 0 0; color:#5d6675; font-size:12px; }
     button {
       width:100%; min-height:54px; border:1px solid #e2bd62; border-radius:13px;
       background:linear-gradient(135deg,#123f79,var(--navy)); color:white;
@@ -67,7 +89,9 @@
       .card { border-radius:0; min-height:100vh; }
       form { padding:22px 16px; }
       .grid, .participant-grid { grid-template-columns:1fr; }
+      .flight-details-grid { grid-template-columns:1fr; }
       .full, .participant-grid .full { grid-column:auto; }
+      .flight-details-grid .full { grid-column:auto; }
       input, select, textarea { font-size:16px; background:#172231; color:#fff; }
       input::placeholder, textarea::placeholder { color:#c5cbd3; }
       select option { background:#111c2c; color:#fff; }
@@ -134,31 +158,33 @@
           <label for="accompanyingPerson">Accompanying person / spouse</label>
           <input id="accompanyingPerson" name="accompanyingPerson" placeholder="Full name, if applicable">
         </div>
-        <div>
-          <label for="arrivalDate">Arrival date</label>
-          <input id="arrivalDate" name="arrivalDate" type="date">
-        </div>
-        <div>
-          <label for="departureDate">Departure date</label>
-          <input id="departureDate" name="departureDate" type="date">
-        </div>
-        <div>
+        <div class="full">
           <label for="flightsBooked">Flights booked? *</label>
           <select id="flightsBooked" name="flightsBooked" required>
             <option value="">Select</option><option>No</option><option>Yes</option>
           </select>
         </div>
-        <div>
-          <label for="airline">Airline</label>
-          <input id="airline" name="airline">
-        </div>
-        <div class="full">
-          <label for="arrivalFlightAndTime">Arrival flight &amp; time</label>
-          <input id="arrivalFlightAndTime" name="arrivalFlightAndTime" placeholder="Example: A3 280 — 14:35">
-        </div>
-        <div class="full">
-          <label for="departureFlightAndTime">Departure flight &amp; time</label>
-          <input id="departureFlightAndTime" name="departureFlightAndTime" placeholder="Example: A3 281 — 18:10">
+        <div id="flightDetails" class="full flight-details-grid" hidden>
+          <div>
+            <label for="arrivalDate">Arrival date</label>
+            <input id="arrivalDate" name="arrivalDate" type="date">
+          </div>
+          <div>
+            <label for="departureDate">Departure date</label>
+            <input id="departureDate" name="departureDate" type="date">
+          </div>
+          <div class="full">
+            <label for="airline">Airline</label>
+            <input id="airline" name="airline">
+          </div>
+          <div class="full">
+            <label for="arrivalFlightAndTime">Arrival flight &amp; time</label>
+            <input id="arrivalFlightAndTime" name="arrivalFlightAndTime" placeholder="Example: A3 280 — 14:35">
+          </div>
+          <div class="full">
+            <label for="departureFlightAndTime">Departure flight &amp; time</label>
+            <input id="departureFlightAndTime" name="departureFlightAndTime" placeholder="Example: A3 281 — 18:10">
+          </div>
         </div>
         <div class="full">
           <label for="allergies">Allergies / dietary restrictions</label>
@@ -206,14 +232,129 @@
 
     <footer>
       <a href="https://www.nglgreece.org" target="_blank" rel="noopener">www.nglgreece.org</a>
-      <span class="build">BUILD NGLG-EN-CORFU-2026-R1</span>
+      <span class="build">BUILD NGLG-EN-CORFU-2026-R2</span>
     </footer>
   </main>
+
+  <section id="welcomeOverlay" class="welcome-overlay" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+    <div class="welcome-card">
+      <button id="welcomeClose" class="welcome-close" type="button" aria-label="Close welcome message">×</button>
+      <h2 id="welcomeTitle">Welcome to the National Grand Lodge of Greece</h2>
+      <div id="welcomeMessages"></div>
+      <p class="welcome-timer">This message will close automatically in <span id="welcomeSeconds">5</span> seconds.</p>
+    </div>
+  </section>
 
   <script>
     const form = document.getElementById('registrationForm');
     const statusBox = document.getElementById('status');
     const button = document.getElementById('submitButton');
+    const grandLodge = document.getElementById('grandLodge');
+    const flightsBooked = document.getElementById('flightsBooked');
+    const flightDetails = document.getElementById('flightDetails');
+    const flightFieldIds = ['arrivalDate','departureDate','airline','arrivalFlightAndTime','departureFlightAndTime'];
+    const welcomeOverlay = document.getElementById('welcomeOverlay');
+    const welcomeMessages = document.getElementById('welcomeMessages');
+    const welcomeSeconds = document.getElementById('welcomeSeconds');
+    let welcomeCloseTimer = null;
+    let welcomeCountdownTimer = null;
+
+    const welcomeMessagesByGrandLodge = {
+      'Grand Lodge of Ireland': [
+        { language:'English', text:'Thank you for your registration! We look forward to welcoming you.' },
+        { language:'Gaeilge', text:'Go raibh maith agaibh as bhur gclárú! Táimid ag tnúth le fáilte a chur romhaibh.' }
+      ],
+      'Grand Lodge of Scotland': [
+        { language:'English', text:'Thank you for your registration! We look forward to welcoming you.' },
+        { language:'Gàidhlig', text:'Tapadh leibh airson ur clàradh! Tha sinn a’ coimhead air adhart ri fàilte a chur oirbh.' }
+      ],
+      'Regular Grand Lodge of Italy': [
+        { language:'English', text:'Thank you for your registration! We look forward to welcoming you.' },
+        { language:'Italiano', text:'Grazie per la registrazione! Non vediamo l’ora di darvi il benvenuto.' }
+      ],
+      'Grand Lodge of Estonia': [
+        { language:'English', text:'Thank you for your registration! We look forward to welcoming you.' },
+        { language:'Eesti', text:'Täname registreerumise eest! Ootame rõõmuga võimalust teid tervitada.' }
+      ],
+      'Grand Lodge of Albania': [
+        { language:'English', text:'Thank you for your registration! We look forward to welcoming you.' },
+        { language:'Shqip', text:'Ju falënderojmë për regjistrimin! Mezi presim t’ju mirëpresim.' }
+      ],
+      'Grand Lodge of Latvia': [
+        { language:'English', text:'Thank you for your registration! We look forward to welcoming you.' },
+        { language:'Latviešu', text:'Paldies par reģistrēšanos! Ar nepacietību gaidām iespēju jūs sveikt.' }
+      ],
+      'Grand Lodge of Monaco': [
+        { language:'English', text:'Thank you for your registration! We look forward to welcoming you.' },
+        { language:'Français', text:'Nous vous remercions pour votre inscription ! Nous nous réjouissons de vous accueillir.' }
+      ],
+      'Grand Lodge of Hawaii': [
+        { language:'English', text:'Thank you for your registration! We look forward to welcoming you.' },
+        { language:'ʻŌlelo Hawaiʻi', text:'Mahalo no ko ʻoukou hoʻopaʻa inoa ʻana! Ke kakali nei mākou e hoʻokipa iā ʻoukou.' }
+      ],
+      'Grand Lodge of Montenegro': [
+        { language:'English', text:'Thank you for your registration! We look forward to welcoming you.' },
+        { language:'Crnogorski', text:'Hvala vam na registraciji! Radujemo se što ćemo vas dočekati.' }
+      ],
+      'GLSA Switzerland': [
+        { language:'English', text:'Thank you for your registration! We look forward to welcoming you.' },
+        { language:'Deutsch', text:'Vielen Dank für Ihre Anmeldung! Wir freuen uns darauf, Sie willkommen zu heissen.' },
+        { language:'Français', text:'Nous vous remercions pour votre inscription ! Nous nous réjouissons de vous accueillir.' },
+        { language:'Italiano', text:'Grazie per la registrazione! Non vediamo l’ora di darvi il benvenuto.' },
+        { language:'Rumantsch', text:'Grazia fitg per Vossa annunzia! Nus ans legrain da Vus beneventar.' }
+      ],
+      'Grand Lodge of Israel': [
+        { language:'English', text:'Thank you for your registration! We look forward to welcoming you.' },
+        { language:'עברית', text:'תודה על הרשמתכם! אנו מצפים לקבל את פניכם.', direction:'rtl' },
+        { language:'العربية', text:'شكرًا لتسجيلكم! نتطلع إلى الترحيب بكم.', direction:'rtl' }
+      ]
+    };
+
+    function updateFlightDetails() {
+      const show = flightsBooked.value === 'Yes';
+      flightDetails.hidden = !show;
+      flightDetails.setAttribute('aria-hidden', String(!show));
+      if (!show) flightFieldIds.forEach(id => { document.getElementById(id).value = ''; });
+    }
+
+    function closeWelcomeMessage() {
+      clearTimeout(welcomeCloseTimer);
+      clearInterval(welcomeCountdownTimer);
+      welcomeOverlay.classList.remove('open');
+    }
+
+    function showWelcomeMessage() {
+      const messages = welcomeMessagesByGrandLodge[grandLodge.value];
+      if (!messages) return closeWelcomeMessage();
+      clearTimeout(welcomeCloseTimer);
+      clearInterval(welcomeCountdownTimer);
+      welcomeMessages.replaceChildren(...messages.map(message => {
+        const item = document.createElement('div');
+        item.className = 'welcome-message';
+        if (message.direction) item.dir = message.direction;
+        const language = document.createElement('span');
+        language.className = 'welcome-language';
+        language.textContent = message.language;
+        const text = document.createElement('span');
+        text.textContent = message.text;
+        item.append(language, text);
+        return item;
+      }));
+      let remaining = 5;
+      welcomeSeconds.textContent = String(remaining);
+      welcomeOverlay.classList.add('open');
+      welcomeCountdownTimer = setInterval(() => {
+        remaining -= 1;
+        welcomeSeconds.textContent = String(Math.max(remaining, 0));
+      }, 1000);
+      welcomeCloseTimer = setTimeout(closeWelcomeMessage, 5000);
+    }
+
+    flightsBooked.addEventListener('change', updateFlightDetails);
+    grandLodge.addEventListener('change', showWelcomeMessage);
+    document.getElementById('welcomeClose').addEventListener('click', closeWelcomeMessage);
+    welcomeOverlay.addEventListener('click', event => { if (event.target === welcomeOverlay) closeWelcomeMessage(); });
+    updateFlightDetails();
 
     form.addEventListener('submit', event => {
       event.preventDefault();

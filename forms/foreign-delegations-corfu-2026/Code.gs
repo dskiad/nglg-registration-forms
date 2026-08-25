@@ -3,12 +3,12 @@
  * Production response destination:
  *   Spreadsheet: Form 18 19 Dec 2026
  *   Sheet tab: form1
- *   Build: NGLG-EN-CORFU-2026-R1
+ *   Build: NGLG-EN-CORFU-2026-R2
  */
 
 const SPREADSHEET_ID_ = '143R9sFxNZ08yJs6HD21YGaXqge2M5f3pYAOEpeyDUtY';
 const RESPONSE_SHEET_ = 'form1';
-const BUILD_ = 'NGLG-EN-CORFU-2026-R1';
+const BUILD_ = 'NGLG-EN-CORFU-2026-R2';
 
 const RESPONSE_HEADERS_ = [
   'Timestamp',
