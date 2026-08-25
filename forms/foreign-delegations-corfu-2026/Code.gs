@@ -219,7 +219,7 @@ function setupManualEmailButtons() {
     .create();
 
   refreshAllManualEmailButtons_();
-  SpreadsheetApp.getActive().toast(
+  SpreadsheetApp.openById(SPREADSHEET_ID_).toast(
     'Manual confirmation-email buttons are enabled.',
     'NGLG Registration',
     6
