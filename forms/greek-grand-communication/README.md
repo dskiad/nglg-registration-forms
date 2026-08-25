@@ -1,5 +1,9 @@
 # Greek dinner registration form
 
+## Live form
+
+[Open the deployed Greek registration form](https://script.google.com/macros/s/AKfycbztmwT5CG1FtDICWeZDKsuM3vXT99kvVGfWcPIjNvhfcj9PP0qFxB27CfMxWIGg7UCfsg/exec)
+
 This is the Greek NGLG dinner-registration web app (`BUILD NGLG-7S-R6`). It is separate from the English foreign-delegation form.
 
 ## Supported events
