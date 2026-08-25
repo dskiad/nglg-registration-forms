@@ -1,0 +1,69 @@
+# Application Index
+
+This repository contains two independent Google Apps Script web applications for the National Grand Lodge of Greece. Each application has its own source folder, backend, interface, Google Sheet destination and deployment.
+
+## Applications at a glance
+
+| Application | Language and audience | Purpose | Source | Data destination | Build | Deployment |
+|---|---|---|---|---|---|---|
+| Foreign Delegations — Corfu 2026 | English — invited foreign delegations | Registration and travel information for the Semi-Annual Grand Communication in Corfu, 18–19 December 2026 | [Open source folder](forms/foreign-delegations-corfu-2026/) | `Form 18 19 Dec 2026` → `form1` | `NGLG-EN-CORFU-2026-R7` | [Open live form](https://script.google.com/a/macros/nglgreece.gr/s/AKfycbxlT3ubfUS6TYloOAfd1BNSq4WvnA9_ekRJIyOUSGSC34Ie2oEyXJhVAM2fLqT9TNS0OA/exec) |
+| Greek Dinner Registration | Greek — members of the National Grand Lodge of Greece | Dinner attendance for the Grand Communications of 19 December 2026 and 15 May 2027 | [Open source folder](forms/greek-grand-communication/) | Configured private Google Sheet → `DEC 2026`, `MAY 2027` and `Στατιστικά` | `NGLG-7S-R6` | Source ready; production URL is not recorded in this repository |
+
+## 1. Foreign Delegations — Corfu 2026
+
+### What it does
+
+- Collects details for the Head of Delegation and up to two additional participants.
+- Records Grand Lodge, rank, accompanying persons, travel dates, flights and dietary requirements.
+- Shows multilingual welcome messages based on the selected Grand Lodge.
+- Displays flight details only when flights have been booked.
+- Saves every registration to `Form 18 19 Dec 2026`, worksheet `form1`.
+- Sends a designed confirmation email to the registrant.
+- Sends a separate notification to the Grand Chancellor.
+- Includes the NGLG emblem, Grand Chancellor signature photograph and practical travel information.
+- Supports manually entered spreadsheet rows through the `SEND EMAIL` control in column AA.
+- Stores data before attempting email delivery, preventing loss of registrations when email delivery fails.
+
+### Main files
+
+- [Index.html](forms/foreign-delegations-corfu-2026/Index.html) — public webform interface.
+- [Code.gs](forms/foreign-delegations-corfu-2026/Code.gs) — submission, spreadsheet and email backend.
+- [README.md](forms/foreign-delegations-corfu-2026/README.md) — setup and deployment instructions.
+- [links.json](forms/foreign-delegations-corfu-2026/links.json) — deployment and destination registry.
+- [assets](forms/foreign-delegations-corfu-2026/assets/) — inline email images.
+
+## 2. Greek Dinner Registration
+
+### What it does
+
+- Registers Greek NGLG members for the dinner, not for attendance at the Grand Communication itself.
+- Supports the Corfu event of 19 December 2026 and the Athens event of 15 May 2027.
+- Filters Lodges according to Province or Region.
+- Uses the approved list of Grand Officers.
+- Prevents duplicate registrations with the same mobile number.
+- Displays one-time personal messages from the private `cover` worksheet.
+- Allows the registrant to confirm or correct the email address before submission.
+- Sends a confirmation email and reports the actual delivery status.
+- Updates totals, guests, Province/Region participation and the leading Lodge in `Στατιστικά`.
+
+### Main files
+
+- [Index.html](forms/greek-grand-communication/Index.html) — responsive Greek webform.
+- [Code.gs](forms/greek-grand-communication/Code.gs) — event, validation, email and statistics backend.
+- [appsscript.json](forms/greek-grand-communication/appsscript.json) — Apps Script project manifest.
+- [README.md](forms/greek-grand-communication/README.md) — spreadsheet structure and deployment instructions.
+- [assets](forms/greek-grand-communication/assets/) — background, emblem and Grand Master portrait.
+
+## Separation of the two applications
+
+The applications share this GitHub repository only for version control. They must remain separate in operation:
+
+1. Each form uses its own folder.
+2. Each form should use its own Google Apps Script project.
+3. Each form has its own Web App deployment.
+4. Each form writes to its own Google Sheet structure.
+5. Files from one folder must not be copied into the other Apps Script project.
+
+## Privacy
+
+No participant registrations, mobile-message lists, email addresses, phone numbers, travel details or credentials should be committed to GitHub. All operational data remains in access-controlled Google Sheets.
